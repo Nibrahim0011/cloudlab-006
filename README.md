@@ -142,22 +142,6 @@ The replication workflow required more compute capacity than the default AWS quo
     └── validation/
 ```
 
-## Suggested Screenshots
-
-Before publishing the repository, add screenshots that show:
-
-1. AWS EC2 source instance and networking.
-2. Azure Migrate project overview.
-3. Registered discovery appliance.
-4. Discovered server inventory.
-5. Assessment showing **Ready for Azure**.
-6. Replication health or protected status.
-7. Test migration results.
-8. Migrated VM in `rg-migrate-target-nabil`.
-9. Final RDP validation.
-
-Redact public IP addresses, subscription IDs, tenant IDs, usernames, passwords, and access keys before uploading screenshots.
-
 ## Key Takeaway
 
 This project gave me practical experience planning and executing a cross-cloud server migration. The most valuable part of the lab was not only moving the server, but also diagnosing quota, regional capacity, credential, and WinRM connectivity issues across AWS and Azure.
