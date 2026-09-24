@@ -2,7 +2,10 @@
 
 ## Video Walkthrough
 
-🎥 [Watch the AWS-to-Azure Migration Lab Walkthrough](LOOM_URL)
+This project walkthrough is divided into two videos:
+
+- 🎥 [Part 1 — AWS Source Environment and Azure Migration Setup](https://www.loom.com/share/bbfc32cb320c42d0b4b3d28e93adb615)
+- 🎥 [Part 2 — Azure Migrate Configuration, Validation, and Project Review](https://www.loom.com/share/8fd48238e26448a7917c638fe98ddfce)
 
 ## Project Overview
 
@@ -23,7 +26,7 @@ The project was designed to simulate a real infrastructure migration while docum
 
 ## Architecture
 
-### AWS source environment
+### AWS Source Environment
 
 | Resource | Configuration |
 | --- | --- |
@@ -38,7 +41,7 @@ The project was designed to simulate a real infrastructure migration while docum
 | IAM policy | `policy-azure-migrate-nabil` |
 | Instance profile | `profile-azure-migrate-nabil` |
 
-### Azure destination environment
+### Azure Destination Environment
 
 | Resource | Configuration |
 | --- | --- |
@@ -56,33 +59,33 @@ The project was designed to simulate a real infrastructure migration while docum
 
 ## Migration Workflow
 
-### 1. Build the AWS source environment
+### 1. Build the AWS Source Environment
 
 I created an AWS VPC and subnet, attached an internet gateway, configured the route table, and deployed a Windows Server 2022 EC2 instance. I then created the IAM role, policy, and instance profile required for Azure Migrate discovery.
 
-### 2. Prepare the Azure destination
+### 2. Prepare the Azure Destination
 
 I created separate Azure resource groups for migration infrastructure and the migrated workload. I also deployed the target virtual network and subnet that would host the migration components and destination virtual machine.
 
-### 3. Deploy the Azure Migrate appliance
+### 3. Deploy the Azure Migrate Appliance
 
 I created `migrate-project-nabil`, deployed the discovery appliance, and registered it with the Azure Migrate project. The final appliance used the `Standard_D8s_v4` size after the originally selected VM sizes were unavailable in East US.
 
-### 4. Configure credentials and connectivity
+### 4. Configure Credentials and Connectivity
 
 I added the AWS access credentials and the local Windows `Administrator` credentials to the appliance. For Windows discovery, I allowed TCP port `5985` from the appliance public IP to the AWS source security group and used WinRM over HTTP for the lab.
 
-> Security note: credentials, passwords, subscription IDs, access keys, and public IP addresses are intentionally excluded from this repository.
+> Security note: Credentials, passwords, subscription IDs, access keys, and public IP addresses are intentionally excluded from this repository.
 
-### 5. Discover and assess the EC2 server
+### 5. Discover and Assess the EC2 Server
 
 I added the AWS EC2 source using its IP address and verified that the appliance could communicate with the server. After discovery completed, I created an Azure Migrate assessment to review readiness, sizing, and compatibility. The server assessment returned **Ready for Azure**.
 
-### 6. Configure replication
+### 6. Configure Replication
 
 I selected the destination subscription, `rg-migrate-target-nabil`, target virtual network, subnet, storage, and VM settings. After replication initialized, I monitored the server until it reached the protected state.
 
-### 7. Test and complete the migration
+### 7. Test and Complete the Migration
 
 I ran a test migration before cutover to verify that the server could start successfully in Azure without affecting the AWS source. After validation, I cleaned up the test migration and initiated the final migration.
 
@@ -92,19 +95,19 @@ After cutover, I confirmed that the migrated VM appeared in the target resource 
 
 ## Troubleshooting and Lessons Learned
 
-### Azure VM quota and SKU availability
+### Azure VM Quota and SKU Availability
 
 The first appliance deployments failed because the subscription had no available `StandardDSv5Family` quota in East US and `Standard_A8_v2` was unavailable. I reviewed regional VM usage, evaluated alternate sizes, and successfully deployed the appliance with `Standard_D8s_v4`.
 
-### EC2 server was not discovered
+### EC2 Server Was Not Discovered
 
 When the EC2 server did not appear in Azure Migrate, I re-entered the AWS access key and secret, confirmed that the appliance and source were configured for the same AWS region, and revalidated the discovery source.
 
-### Windows validation failed
+### Windows Validation Failed
 
 The Windows source initially failed validation. I limited inbound TCP `5985` to the appliance public IP, disabled HTTPS-only discovery for the lab, allowed WinRM HTTP fallback, and ran validation again successfully.
 
-### Replication capacity constraints
+### Replication Capacity Constraints
 
 The replication workflow required more compute capacity than the default AWS quota allowed. I submitted a vCPU quota request and evaluated a separate replication appliance design while monitoring the request. This reinforced the importance of checking service quotas before beginning a migration window.
 
